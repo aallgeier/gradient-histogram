@@ -8,7 +8,7 @@ import math
 
 def plot_grad_histogram_grid(image_gray, cell_size, histogram_grid, bins):
     fig, ax = plt.subplots(figsize = (7, 7))
-    #ax.imshow(image_gray, cmap="gray")
+    ax.imshow(image_gray, cmap="gray")
 
     for k in range(len(histogram_grid)):
         for l in range(len(histogram_grid[0])):
