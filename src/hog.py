@@ -49,7 +49,7 @@ def compute_image_gradients(img_gray):
 def compute_magnitudes_and_orientations(image_gray: np.ndarray):
     """
     Computes gradient magnitude (Ix^2 + Iy^2) and gradient orientation
-    (radian) at each pixel location
+    (radian) at each pixel location.
 
     Args:
         image_gray: black and white image
@@ -69,12 +69,21 @@ def create_histogram(cell_magnitudes, cell_orientations, num_bins = 8):
     """
     For a given cell of m (pixels) x n (pixels), compute the gradient 
     orientation histogram weighted by magnitude.
+
+    Args:
+        cell_magnitudes: gradient magnitudes in given cell
+        cell_orientations: gradient orientations in given cell
+        num_bins: number of bins in histogram
+    
+    Returns:
+        histogram: histogram of gradient orientations in cell weighted by magnitude.
+        bin_ticks: Ticks of bins. num_bins + 1
     """
 
-    bins = np.linspace(-np.pi-np.pi/8, np.pi-np.pi/8, num_bins+1)
-    histogram = np.histogram(np.around(cell_orientations, decimals=5), bins, weights= cell_magnitudes)[0]
+    bin_ticks = np.linspace(-np.pi-np.pi/8, np.pi-np.pi/8, num_bins+1)
+    histogram = np.histogram(np.around(cell_orientations, decimals=5), bin_ticks, weights= cell_magnitudes)[0]
 
-    return histogram, bins
+    return histogram, bin_ticks
 
 def create_image_histograms(image_gray: np.ndarray, cell_size=8):
     """
@@ -82,7 +91,7 @@ def create_image_histograms(image_gray: np.ndarray, cell_size=8):
         image_gray: grayscale image
 
     Returns:
-        (M//cell_size, N//cell_size) grid of numpy histograms
+        (M//cell_size, N//cell_size) grid of gradient histograms at each cell
     
     """
     N, M = image_gray.shape
@@ -95,25 +104,35 @@ def create_image_histograms(image_gray: np.ndarray, cell_size=8):
     num_bins = 8
     histogram_grid = np.zeros((M//cell_size, M//cell_size,  num_bins))
 
-    bins = None
+    bin_ticks = None
 
     for i in range(M//cell_size):
         for j in range(N//cell_size):
+            # Get cell
             cell_orientations = orientation[i * cell_size: (i+1)*cell_size, j * cell_size: (j+1)*cell_size]
             cell_magnitudes   = grad_magnitude[i * cell_size: (i+1)*cell_size, j * cell_size: (j+1)*cell_size]
-
-            histogram, bins = create_histogram(cell_magnitudes, cell_orientations, num_bins=num_bins)
+            
+            # Get histogram of cell
+            histogram, bin_ticks = create_histogram(cell_magnitudes, cell_orientations, num_bins=num_bins)
 
             histogram_grid[i, j] = histogram
 
 
-    return histogram_grid, bins
+    return histogram_grid, bin_ticks
 
 def create_descriptor(histogram_grid, block_size=2, step_size=1):
     """
-    2D list of histograms
+    Create rectangular HOG descriptor. 
 
-    Blocks can overlap
+    Args: 
+        histogram_grid: 2D grid of histograms (e.g. histogram_grid[0, 0] is a 
+        histogram)
+        block_size: Size of blocks consisting of cells
+        step_size: step size of sliding window (sliding over cells)
+        
+
+    Returns: 
+        block_grid: 2D Grid of blocks.
     """
 
     M = len(histogram_grid)
