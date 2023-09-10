@@ -65,13 +65,11 @@ def compute_magnitudes_and_orientations(image_gray: np.ndarray):
 
     return orientation, grad_magnitude
 
-def create_histogram(cell_magnitudes, cell_orientations):
+def create_histogram(cell_magnitudes, cell_orientations, num_bins = 8):
     """
     For a given cell of m (pixels) x n (pixels), compute the gradient 
     orientation histogram weighted by magnitude.
     """
-
-    num_bins = 8
 
     bins = np.linspace(-np.pi-np.pi/8, np.pi-np.pi/8, num_bins+1)
     histogram = np.histogram(np.around(cell_orientations, decimals=5), bins, weights= cell_magnitudes)[0]
@@ -94,50 +92,54 @@ def create_image_histograms(image_gray: np.ndarray, cell_size=8):
     assert M % cell_size == 0
     assert N % cell_size == 0
 
-    histogram_grid = []
+    num_bins = 8
+    histogram_grid = np.zeros((M//cell_size, M//cell_size,  num_bins))
 
     bins = None
 
     for i in range(M//cell_size):
-        row = []
         for j in range(N//cell_size):
             cell_orientations = orientation[i * cell_size: (i+1)*cell_size, j * cell_size: (j+1)*cell_size]
             cell_magnitudes   = grad_magnitude[i * cell_size: (i+1)*cell_size, j * cell_size: (j+1)*cell_size]
 
-            histogram, bins = create_histogram(cell_magnitudes, cell_orientations)
+            histogram, bins = create_histogram(cell_magnitudes, cell_orientations, num_bins=num_bins)
 
-            row.append(histogram)
+            histogram_grid[i, j] = histogram
 
-        histogram_grid.append(row)
 
     return histogram_grid, bins
 
-def normalize_blocks(histogram_grid, block_size=2, step_size=1):
+def create_descriptor(histogram_grid, block_size=2, step_size=1):
     """
-    2D list of histograms made from overlappung square blocks
+    2D list of histograms
 
+    Blocks can overlap
     """
 
-    grid_blocks = []
+    M = len(histogram_grid)
+    N = len(histogram_grid[0])
 
-    for i in range(len(histogram_grid)-1):
-        grid_row = []
-        for j in range(len(histogram_grid[0])-1):
+    assert (block_size <= M) and (block_size <= N)
+    
+    m = (len(histogram_grid)- (block_size-1)) // step_size
+    n = (len(histogram_grid[0])-(block_size-1)) // step_size
 
-            block = histogram_grid[i*step_size:i*step_size + block_size][j*step_size:j*step_size + block_size]
+    block_grid = np.zeros((m, n, len(histogram_grid[0][0])* block_size**2))
 
-            block_flattened = []
-            # concatenate the histograms within each block
-            for row in range(len(block)):
-                for col in range(len(block[0])):
-                    block_flattened.append(block[row][col])
-            
-            block_concat = np.concatenate(block_flattened)
+    for i in range(m):
+        for j in range(n):
+            # Get block
+            block = histogram_grid[i*step_size:i*step_size + block_size, j*step_size:j*step_size + block_size]
+            # concatenate the histograms
+            block_concat = block.flatten()
 
-            # normalize concatenated block
+            # normalize block to account for different light and contrast
             block_concat = block_concat/np.linalg.norm(block_concat)
 
-            grid_row.append()
-        
-        grid_blocks.append(grid_row)
+            block_grid[i, j] = block_concat
+
+    return block_grid
+ 
+
+
 

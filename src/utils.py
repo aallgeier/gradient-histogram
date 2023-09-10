@@ -13,11 +13,11 @@ def plot_grad_histogram_grid(image_gray, cell_size, histogram_grid, bins):
     for k in range(len(histogram_grid)):
         for l in range(len(histogram_grid[0])):
             histogram = histogram_grid[k][l]
-
-            # set histogram values within 0 and 1.
+            # Normalize histogram 
             if 0 < np.max(histogram):
                 histogram = (histogram - np.min(histogram))/(np.max(histogram) - np.min(histogram))
-            
+    
+                
             for i, bin in enumerate(bins):
                 if i != len(bins)-1 and histogram[i] > 0.1:
                     rep_angle = (bins[i] + bins[i+1])/2
@@ -43,5 +43,7 @@ def plot_grad_histogram_grid(image_gray, cell_size, histogram_grid, bins):
     ax.grid()
        
     plt.show()
+
+
 
         
