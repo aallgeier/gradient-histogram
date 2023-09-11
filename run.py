@@ -35,6 +35,11 @@ for annot_p in annot_list_temp:
 # Get positive regions and convert to hog descriptor.
 cell_size = 8
 block_size = 2
+num_pos_samples = 20
+num_neg_samples = 20
+
+positive_image_samples = []
+negative_image_samples = []
 
 descriptor_labels = []
 
@@ -51,15 +56,19 @@ for annot_p in tqdm(cat_annot):
     positive_regions = get_positive_region(gray, bounding_boxes)
 
     # Create HOG descriptor
-    for im in positive_regions:
+    for i, im in enumerate(positive_regions):
         image = cv2.resize(im, (256, 256))
         histogram_grid, bins = create_image_histograms(image, cell_size=cell_size)
         blocks = create_descriptor(histogram_grid, block_size=block_size, step_size=1)
         
+        if i < num_pos_samples:
+            positive_image_samples.append(image)
+
         descriptor_labels.append(1)
         positive_descriptors.append(blocks.flatten())
 
 print("...positive descriptors ready", len(positive_descriptors))
+
 
 print("...preparing negative descriptors ")
 negative_descriotors = []
@@ -74,6 +83,9 @@ for i in tqdm(range(len(positive_descriptors))):
 
     # Get descriptor
     image = cv2.resize(random_region, (256, 256))
+    if i < num_neg_samples:
+        negative_image_samples.append(image)
+
     histogram_grid, bins = create_image_histograms(image, cell_size=cell_size)
     blocks = create_descriptor(histogram_grid, block_size=block_size, step_size=1)
 
@@ -89,11 +101,11 @@ data_y = np.array(descriptor_labels)
 inds = np.arange(len(data_X))
 np.random.shuffle(inds)
 
-X_train = data_X[inds[:len(inds)//2]]
-y_train = data_y[inds[:len(inds)//2]]
+X_train = data_X[inds[:2*len(inds)//3]]
+y_train = data_y[inds[:2*len(inds)//3]]
 
-X_test = data_X[inds[len(inds)//2:]]
-y_test = data_y[inds[len(inds)//2:]]
+X_test = data_X[inds[2*len(inds)//3:]]
+y_test = data_y[inds[2*len(inds)//3:]]
 
 clf = svm.SVC()
 print("...fitting SVM")
@@ -101,6 +113,29 @@ clf.fit(X_train, y_train)
 
 y_pred = clf.predict(X_test)
 print(classification_report(y_test, y_pred))
+
+
+num_cols = 5
+fig, axes = plt.subplots(num_pos_samples//num_cols, num_cols)
+for i in range(num_pos_samples):
+    im = positive_image_samples[i]
+    ax = axes[i//num_cols, i%num_cols]
+    ax.imshow(im, cmap="gray")
+    ax.set_xticks([])
+    ax.set_yticks([])
+fig.tight_layout()
+plt.show()
+
+fig, axes = plt.subplots(num_neg_samples//num_cols, num_cols)
+for i in range(num_neg_samples):
+    im = negative_image_samples[i]
+    ax = axes[i//num_cols, i%num_cols]
+    ax.imshow(im, cmap="gray")
+    ax.set_xticks([])
+    ax.set_yticks([])
+fig.tight_layout()
+plt.show()
+
 
 
 
