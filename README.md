@@ -10,8 +10,8 @@ or not.
 images. 
 <br>
 <p align="center">
-<img src="data/cats.png" width="400"/>
-<img src="data/non_cats.png" width="400"/>
+<img src="readme_images/cats.png" width="400"/>
+<img src="readme_images/non_cats.png" width="400"/>
 </p>
 
 1. Take x, y image gradients. <br>
@@ -20,9 +20,9 @@ images.
 4. For each cell, create a histogram of gradient orientation weighted by magnitude. <br>
 
 <p align="center">
-<img src="data/nyuma.jpeg" width="300"/>
-<img src="data/nyuma_gradient.png" width="300"/>
-<img src="data/gradient.png" width="300"/>
+<img src="readme_images/nyuma.jpeg" width="300"/>
+<img src="readme_images/nyuma_gradient.png" width="300"/>
+<img src="readme_images/gradient.png" width="300"/>
 </p>
 
 5. Group the cells into overlapping blocks (e.g. 2 cells $\times$ 2 cells). <br>
@@ -31,6 +31,6 @@ images.
 8. Train and test with SVM.
 
 <p align="center">
-<img src="data/svm_result.png" width="500"/>
+<img src="readme_images/svm_result.png" width="500"/>
 </p>
 
