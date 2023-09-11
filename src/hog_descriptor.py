@@ -152,8 +152,10 @@ def create_descriptor(histogram_grid, block_size=2, step_size=1):
             # concatenate the histograms
             block_concat = block.flatten()
 
-            # normalize block to account for different light and contrast
-            block_concat = block_concat/np.linalg.norm(block_concat)
+            # normalize block to account for different illumination and contrast
+            # within local area
+            if np.linalg.norm(block_concat) != 0:
+                block_concat = block_concat/np.linalg.norm(block_concat)
 
             block_grid[i, j] = block_concat
 
