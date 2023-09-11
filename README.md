@@ -10,8 +10,8 @@ or not.
 images. 
 <br>
 <p align="center">
-<img src="data/cats.png" width="300"/>
-<img src="data/non_cats.png" width="300"/>
+<img src="data/cats.png" width="400"/>
+<img src="data/non_cats.png" width="400"/>
 </p>
 
 1. Take x, y image gradients. <br>
