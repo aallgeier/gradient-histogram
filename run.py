@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 from pathlib import Path
-import math
 import os
 from sklearn import svm
 from sklearn.metrics import classification_report
@@ -11,12 +10,13 @@ from tqdm import tqdm
 
 from src.hog_descriptor import create_image_histograms
 from src.hog_descriptor import create_descriptor
-from src.utils import plot_grad_histogram_grid
 
-from src.handle_data import get_bounding_boxes
-from src.handle_data import get_positive_region
-from src.handle_data import contains_category
-from src.handle_data import get_random_region
+from src.data import get_bounding_boxes
+from src.data import get_positive_region
+from src.data import contains_category
+from src.data import get_random_region
+
+from src.utils import plot_grad_histogram_grid
 
 
 ANNOT_ROOT = "../Data/VOCdevkit/VOC2012/Annotations"
