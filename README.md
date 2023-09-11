@@ -5,7 +5,7 @@ HOG Cat Detection <br>
 Using the Histogram of Oriented Gradients descriptor, determined whether image contains a cat
 or not.
 
-## Process details
+## Steps
 0. Obtain data from PASCAL VOC 2012 and get positive (cat) and negative (no cat)
 images. 
 <br>
