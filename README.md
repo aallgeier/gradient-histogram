@@ -1,4 +1,11 @@
-## HOG Cat Detection
+## Project Name 
+HOG Cat Detection <br>
+
+## Summary
+Using the Histogram of Oriented Gradients descriptor, determined whether image contains a cat
+or not.
+
+## Process details
 0. Obtain data from PASCAL VOC 2012 and get positive (cat) and negative (no cat)
 images. 
 <br>
@@ -24,6 +31,6 @@ images.
 8. Train and test with SVM.
 
 <p align="center">
-<img src="data/svm_result.png" width="300"/>
+<img src="data/svm_result.png" width="500"/>
 </p>
 
